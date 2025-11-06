@@ -1,0 +1,52 @@
+# Corner Decorations Negative Positioning Update
+
+## Date: 2025-11-06 10:32:15
+
+## Summary
+Updated corner decorations positioning from 8px to -8px to extend beyond card boundaries for more prominent retro styling.
+
+## Changes Made
+
+### Updated style.css
+- **Changed corner-decor positioning**: Modified from `8px` to `-8px` for all corner decorations
+- This positions the corner decorations outside the card boundaries, making them more visible
+
+### Technical Details
+
+### Corner Decor Positioning
+```css
+.corner-decor.top-left {
+    top: -8px;      /* Changed from 8px */
+    left: -8px;     /* Changed from 8px */
+    border-right: none;
+    border-bottom: none;
+}
+
+.corner-decor.top-right {
+    top: -8px;      /* Changed from 8px */
+    right: -8px;    /* Changed from 8px */
+    border-left: none;
+    border-bottom: none;
+}
+
+.corner-decor.bottom-left {
+    bottom: -8px;   /* Changed from 8px */
+    left: -8px;     /* Changed from 8px */
+    border-right: none;
+    border-top: none;
+}
+
+.corner-decor.bottom-right {
+    bottom: -8px;   /* Changed from 8px */
+    right: -8px;    /* Changed from 8px */
+    border-left: none;
+    border-top: none;
+}
+```
+
+## Status
+✅ **COMPLETED** - Corner decorations are now positioned at -8px to extend beyond card boundaries.
+
+## Next Steps
+- Test application to verify corner decorations appear correctly outside card boundaries
+- Ensure decorations are visible and properly styled with the new positioning

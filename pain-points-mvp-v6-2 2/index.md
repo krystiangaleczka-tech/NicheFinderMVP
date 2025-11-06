@@ -22,12 +22,7 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body class="antialiased">
-    <div class="scanline scanline1"></div>
-    <div class="scanline scanline2"></div>
-    <div class="scanline scanline3"></div>
-    <div class="scanline scanline4"></div>
-    <div class="scanline scanline5"></div>
-    <div class="scanline scanline6"></div>
+    <div class="scanline"></div>
     <div class="container-wrap">
         <div class="flex min-h-screen">
             <!-- Sidebar -->

@@ -285,6 +285,7 @@ body::before {
 .stats-card .value {
     font-family: 'VT323', monospace;
     font-weight: 700;
+    text-shadow: 2px 2px 0 rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-title {
@@ -389,29 +390,29 @@ body::before {
 }
 
 .corner-decor.top-left {
-    top: -6px;
-    left: -6px;
+    top: -2px;
+    left: -2px;
     border-right: none;
     border-bottom: none;
 }
 
 .corner-decor.top-right {
-    top: -6px;
-    right: -6px;
+    top: -2px;
+    right: -2px;
     border-left: none;
     border-bottom: none;
 }
 
 .corner-decor.bottom-left {
-    bottom: -6px;
-    left: -6px;
+    bottom: -2px;
+    left: -2px;
     border-right: none;
     border-top: none;
 }
 
 .corner-decor.bottom-right {
-    bottom: -6px;
-    right: -6px;
+    bottom: -2px;
+    right: -2px;
     border-left: none;
     border-top: none;
 }
@@ -441,52 +442,7 @@ select:focus {
 }
 
 /* Scanline effect */
-@keyframes scanline1 {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-@keyframes scanline2 {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-@keyframes scanline3 {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-@keyframes scanline4 {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-@keyframes scanline5 {
-    0% {
-        transform: translateY(-100%);
-    }
-    100% {
-        transform: translateY(100vh);
-    }
-}
-
-@keyframes scanline6 {
+@keyframes scanline {
     0% {
         transform: translateY(-100%);
     }
@@ -501,38 +457,10 @@ select:focus {
     left: 0;
     width: 100%;
     height: 2px;
-    background: rgba(255, 255, 255, 0.11);
+    background: rgba(255, 255, 255, 0.1);
+    animation: scanline 8s linear infinite;
     pointer-events: none;
     z-index: 9999;
-}
-
-.scanline1 {
-    animation: scanline1 6.3s linear infinite;
-}
-
-.scanline2 {
-    animation: scanline2 6.3s linear infinite;
-    animation-delay: 1.05s;
-}
-
-.scanline3 {
-    animation: scanline3 6.3s linear infinite;
-    animation-delay: 2.1s;
-}
-
-.scanline4 {
-    animation: scanline4 6.3s linear infinite;
-    animation-delay: 3.15s;
-}
-
-.scanline5 {
-    animation: scanline5 6.3s linear infinite;
-    animation-delay: 4.2s;
-}
-
-.scanline6 {
-    animation: scanline6 6.3s linear infinite;
-    animation-delay: 5.25s;
 }
 
 /* Blink animation for retro feel */
@@ -567,7 +495,7 @@ select:focus {
 }
 
 h1, h2, h3 {
-    /* text-shadow removed for cleaner retro look */
+    text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.1);
 }
 
 .retro-header {
@@ -640,9 +568,9 @@ h1, h2, h3 {
 }
 
 .pain-card {
-    background: var(--bg-secondary);
-    border: 4px solid var(--border);
-    border-radius: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
     padding: var(--space-20);
     transition: all var(--duration-fast) var(--ease-standard);
 }
@@ -797,9 +725,9 @@ h1, h2, h3 {
 }
 
 .aggregated-card {
-    background: var(--bg-secondary);
-    border: 4px solid var(--border);
-    border-radius: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
     padding: var(--space-24);
 }
 
@@ -956,15 +884,15 @@ h1, h2, h3 {
 }
 
 .idea-card {
-    background: var(--bg-secondary);
-    border: 4px solid var(--border);
-    border-radius: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
     display: flex;
     flex-direction: column;
     transition: all var(--duration-normal) var(--ease-standard);
     cursor: pointer;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
 }
 
 .idea-card:hover {
@@ -1292,9 +1220,9 @@ h1, h2, h3 {
 }
 
 .stat-card {
-    background: var(--bg-secondary);
-    border: 4px solid var(--border);
-    border-radius: 0;
+    background: var(--color-surface);
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
     padding: var(--space-20);
 }
 
@@ -1311,9 +1239,10 @@ h1, h2, h3 {
 
 .card {
     background: var(--color-surface);
-    border-radius: 0;
+    border: 1px solid var(--color-card-border);
+    border-radius: var(--radius-lg);
     margin-bottom: var(--space-24);
-    overflow: visible;
+    overflow: hidden;
 }
 
 .card-header {

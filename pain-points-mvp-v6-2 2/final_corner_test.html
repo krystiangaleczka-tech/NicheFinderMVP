@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Corner Decor Final Test</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        body {
+            padding: 40px;
+        }
+        .test-section {
+            margin: 40px 0;
+            border: 2px solid #ccc;
+            padding: 20px;
+        }
+        .test-card {
+            margin: 20px;
+            padding: 20px;
+            max-width: 300px;
+        }
+        .highlight {
+            background: yellow;
+            padding: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Corner Decor Final Test</h1>
+    
+    <div class="test-section">
+        <h2>Test 1: Simple Card with Corner Decor</h2>
+        <div class="card test-card">
+            <div class="corner-decor top-left"></div>
+            <div class="corner-decor top-right"></div>
+            <div class="corner-decor bottom-left"></div>
+            <div class="corner-decor bottom-right"></div>
+            <h3>Test Card</h3>
+            <p>This card should have corner decorations visible at all four corners.</p>
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Card from App.js Template</h2>
+        <div id="test-card-container"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Debug Info</h2>
+        <div class="highlight">
+            <p>Corner decorations should appear as L-shaped brackets at each corner of the cards.</p>
+            <p>If you can't see them, check the browser developer tools for any CSS conflicts.</p>
+        </div>
+    </div>
+
+    <script>
+        // Test the exact template from app.js
+        const testItem = {
+            title: "Test Item",
+            platform: "reddit",
+            sentiment: "frustration",
+            category: "ui",
+            urgency_score: 7,
+            description: "This is a test description",
+            pain_point: "This is a test pain point",
+            solution: "This is a test solution",
+            growth_rate: 45,
+            opportunity_score: 8,
+            trend_status: "growing",
+            search_volume: "10K-50K",
+            competition_level: "medium"
+        };
+
+        const sentimentClass = testItem.sentiment === 'frustration' ? 'bg-red-100 text-red-800' : 
+                              testItem.sentiment === 'request' ? 'bg-blue-100 text-blue-800' : 
+                              'bg-green-100 text-green-800';
+
+        const urgencyPercent = (testItem.urgency_score / 10) * 100;
+
+        const testCardHTML = `
+            <div class="card p-5 relative">
+                <div class="corner-decor top-left"></div>
+                <div class="corner-decor top-right"></div>
+                <div class="corner-decor bottom-left"></div>
+                <div class="corner-decor bottom-right"></div>
+                <div class="flex justify-between items-start mb-3">
+                    <h3 class="font-bold text-sm">${testItem.title}</h3>
+                    <span class="badge ${sentimentClass}">${testItem.platform.toUpperCase()}</span>
+                </div>
+                <div class="flex gap-2 mb-4 flex-wrap">
+                    <span class="badge ${sentimentClass}">${testItem.sentiment.toUpperCase()}</span>
+                    <span class="badge" style="background: var(--retro-blue); color: white; border-color: var(--retro-dark);">${testItem.category.toUpperCase()}</span>
+                </div>
+                <div class="mb-4">
+                    <div class="text-xs font-bold mb-2">URGENCY: <span class="text-pink-600">${testItem.urgency_score}/10</span></div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${urgencyPercent}%"></div>
+                    </div>
+                </div>
+                <div class="text-xs mb-4">
+                    <p class="mb-2">${testItem.description}</p>
+                </div>
+                <div class="text-xs space-y-2">
+                    <div><strong>PAIN POINT:</strong> ${testItem.pain_point}</div>
+                    <div><strong>SOLUTION:</strong> ${testItem.solution}</div>
+                </div>
+            </div>
+        `;
+
+        document.getElementById('test-card-container').innerHTML = testCardHTML;
+    </script>
+</body>
+</html>
