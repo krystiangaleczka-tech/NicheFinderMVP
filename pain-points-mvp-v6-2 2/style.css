@@ -285,6 +285,7 @@ body::before {
 .stats-card .value {
     font-family: 'VT323', monospace;
     font-weight: 700;
+    text-shadow: none;
 }
 
 .sidebar-title {
@@ -298,6 +299,7 @@ body::before {
     border: 2px solid var(--retro-dark);
     display: inline-block;
     box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+    text-shadow: none;
 }
 
 .mobile-hidden {
