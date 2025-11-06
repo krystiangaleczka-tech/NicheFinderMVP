@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { ScanlineEffect, Sidebar, Header } from './layout';
 import { RealtimeTab } from './realtime';
 import { AggregatedTab } from './aggregated';
@@ -64,13 +64,13 @@ export const NicheFinderApp: React.FC = () => {
         <Sidebar activeTab={activeTab} onTabChange={setActiveTab} />
         
         {/* Main Content */}
-        <main className="flex-1 overflow-auto">
+        <main className="flex-1 overflow-auto md:ml-0">
           <Header 
             title={getTabTitle(activeTab)}
             subtitle={getTabSubtitle(activeTab)}
           />
           
-          <div className="p-6">
+          <div className="p-4 md:p-6">
             {renderActiveTab()}
           </div>
         </main>

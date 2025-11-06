@@ -22,14 +22,14 @@ export const Header: React.FC<HeaderProps> = ({ title, subtitle }) => {
           )}
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2 md:gap-4">
           {/* Search */}
-          <div className="hidden md:flex items-center gap-2 bg-bg-primary border-3 border-retro-brown px-3 py-2">
+          <div className="hidden sm:flex items-center gap-2 bg-bg-primary border-3 border-retro-brown px-2 md:px-3 py-2">
             <Search className="w-4 h-4 text-text-secondary" />
             <input
               type="text"
               placeholder="Search..."
-              className="bg-transparent text-xs font-medium text-text-primary placeholder-text-secondary outline-none w-32"
+              className="bg-transparent text-xs font-medium text-text-primary placeholder-text-secondary outline-none w-20 md:w-32"
             />
           </div>
           

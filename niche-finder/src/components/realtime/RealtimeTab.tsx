@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { PainPoint } from '../../lib/types';
 import { mockPainPoints } from '../../lib/data';
 import { Select } from '../ui/Select';
@@ -33,13 +33,13 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
   const categories = Array.from(new Set(mockPainPoints.map((p: any) => p.category)));
   const sentiments = Array.from(new Set(mockPainPoints.map((p: any) => p.sentiment)));
 
-  const handleSave = (painPoint: any) => {
+  const handleSave = useCallback((painPoint: any) => {
     console.log('Saving pain point:', painPoint);
-  };
+  }, []);
 
-  const handleGenerate = (painPoint: any) => {
+  const handleGenerate = useCallback((painPoint: any) => {
     console.log('Generating idea from pain point:', painPoint);
-  };
+  }, []);
 
   return (
     <div className={className}>
@@ -100,7 +100,7 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
       </div>
 
       {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredData.map((painPoint: any) => (
           <PainPointCard
             key={painPoint.id}

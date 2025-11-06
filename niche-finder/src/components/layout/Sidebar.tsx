@@ -1,5 +1,5 @@
-import React from 'react';
-import { Activity, BarChart3, Lightbulb, PieChart, RefreshCw, Download } from 'lucide-react';
+import React, { useState } from 'react';
+import { Activity, BarChart3, Lightbulb, PieChart, RefreshCw, Download, Menu, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { Card } from '../ui/Card';
 
@@ -9,6 +9,8 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
   const navItems = [
     { id: 'realtime', label: 'REAL-TIME', icon: Activity },
     { id: 'aggregated', label: 'AGGREGATED', icon: BarChart3 },
@@ -16,8 +18,32 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
     { id: 'analytics', label: 'ANALYTICS', icon: PieChart },
   ];
 
+  const handleTabChange = (tab: string) => {
+    onTabChange(tab);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
-    <aside className="sidebar fixed md:relative w-64 h-screen z-20">
+    <>
+      {/* Mobile Menu Button */}
+      <button
+        className="md:hidden fixed top-4 left-4 z-30 p-2 bg-retro-orange border-3 border-retro-dark shadow-retro-button"
+        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+      >
+        {isMobileMenuOpen ? <X className="w-6 h-6 text-white" /> : <Menu className="w-6 h-6 text-white" />}
+      </button>
+
+      {/* Mobile Overlay */}
+      {isMobileMenuOpen && (
+        <div
+          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-20"
+          onClick={() => setIsMobileMenuOpen(false)}
+        />
+      )}
+
+      <aside className={`sidebar fixed md:relative w-64 h-screen z-20 transform transition-transform duration-300 ease-in-out ${
+        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+      }`}>
       <div className="p-6">
         {/* Logo */}
         <div className="mb-8 relative">
@@ -91,5 +117,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, onTabChange }) => {
         </div>
       </div>
     </aside>
+    </>
   );
 };

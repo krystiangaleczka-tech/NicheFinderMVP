@@ -176,30 +176,30 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-        <Card className="stats-card p-5 text-center">
-          <div className="text-4xl font-bold mb-2 value">5,432</div>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
+        <Card className="stats-card p-3 md:p-5 text-center">
+          <div className="text-2xl md:text-4xl font-bold mb-2 value">5,432</div>
           <div className="text-xs font-bold">TOTAL IDEAS</div>
         </Card>
-        <Card className="stats-card p-5 text-center bg-gradient-to-br from-retro-green to-retro-teal">
-          <div className="text-4xl font-bold mb-2 value">1,234</div>
+        <Card className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-green to-retro-teal">
+          <div className="text-2xl md:text-4xl font-bold mb-2 value">1,234</div>
           <div className="text-xs font-bold">VALIDATED</div>
         </Card>
-        <Card className="stats-card p-5 text-center bg-gradient-to-br from-retro-purple to-retro-pink">
-          <div className="text-4xl font-bold mb-2 value">89</div>
+        <Card className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-purple to-retro-pink">
+          <div className="text-2xl md:text-4xl font-bold mb-2 value">89</div>
           <div className="text-xs font-bold">LAUNCHED</div>
         </Card>
-        <Card className="stats-card p-5 text-center bg-gradient-to-br from-retro-orange to-retro-yellow">
-          <div className="text-4xl font-bold mb-2 value">$1.2B</div>
+        <Card className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-orange to-retro-yellow">
+          <div className="text-2xl md:text-4xl font-bold mb-2 value">$1.2B</div>
           <div className="text-xs font-bold">TAM FOUND</div>
         </Card>
       </div>
 
       {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
         {/* Hottest Pain Points */}
-        <Card className="p-5">
-          <h3 className="font-bold mb-4 text-sm bg-orange-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <Card className="p-4 md:p-5">
+          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-orange-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
             HOTTEST PAIN POINTS
           </h3>
           <div className="space-y-2">
@@ -207,7 +207,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
               <div key={point.id} className="flex items-center justify-between p-2 bg-bg-tertiary border-2 border-retro-brown">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-retro-orange">#{index + 1}</span>
-                  <span className="text-xs font-medium truncate max-w-[150px]">{point.title}</span>
+                  <span className="text-xs font-medium truncate max-w-[100px] md:max-w-[150px]">{point.title}</span>
                 </div>
                 <span className="text-xs font-bold text-retro-teal">{point.votes}</span>
               </div>
@@ -216,32 +216,32 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
         </Card>
 
         {/* Category Split */}
-        <Card className="p-5">
-          <h3 className="font-bold mb-4 text-sm bg-teal-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <Card className="p-4 md:p-5">
+          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-teal-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
             CATEGORY SPLIT
           </h3>
-          <div className="h-48">
+          <div className="h-40 md:h-48">
             <Pie ref={categoryChartRef} data={categoryData} options={chartOptions} />
           </div>
         </Card>
 
         {/* Platform Split */}
-        <Card className="p-5">
-          <h3 className="font-bold mb-4 text-sm bg-pink-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <Card className="p-4 md:p-5">
+          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-pink-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
             PLATFORM SPLIT
           </h3>
-          <div className="h-48">
+          <div className="h-40 md:h-48">
             <Pie ref={platformChartRef} data={platformData} options={chartOptions} />
           </div>
         </Card>
       </div>
       
       {/* Opportunity Matrix */}
-      <Card className="p-5 mt-5">
-        <h3 className="font-bold mb-4 text-sm bg-purple-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+      <Card className="p-4 md:p-5 mt-4 md:mt-5">
+        <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-purple-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
           OPPORTUNITY MATRIX
         </h3>
-        <div className="h-96">
+        <div className="h-80 md:h-96">
           <Scatter ref={opportunityChartRef} data={opportunityData} options={opportunityOptions} />
         </div>
       </Card>
