@@ -1,3 +1,6 @@
+# NicheFinderApp
+
+```typescript
 'use client';
 
 import React, { useState, useMemo } from 'react';
@@ -28,7 +31,7 @@ export const NicheFinderApp: React.FC = () => {
   const getTabSubtitle = (tab: string) => {
     switch (tab) {
       case 'realtime':
-        return 'Monitor real-time pain points from multiple platforms';
+        'Monitor real-time pain points from multiple platforms';
       case 'aggregated':
         return 'Analyze aggregated pain point patterns';
       case 'ideas':
@@ -56,7 +59,7 @@ export const NicheFinderApp: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen bg-retro-cream antialiased relative">
+    <div className="min-h-screen bg-bg-primary antialiased relative">
       <ScanlineEffect />
       
       <div className="flex min-h-screen">
@@ -78,3 +81,8 @@ export const NicheFinderApp: React.FC = () => {
     </div>
   );
 };
+```
+
+---
+*File: /Users/krystiangaleczka/Documents/NicheFinderMVP/niche-finder/src/components/NicheFinderApp.tsx*
+*Exported: NicheFinderApp.md*

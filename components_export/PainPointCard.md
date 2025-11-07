@@ -1,3 +1,6 @@
+# PainPointCard
+
+```typescript
 import React from 'react';
 import { PainPoint } from '../../lib/types';
 import { Card } from '../ui/Card';
@@ -31,9 +34,14 @@ export const PainPointCard: React.FC<PainPointCardProps> = ({
   };
 
   return (
-    <Card className="p-5">
+    <div className="card p-5 relative">
+      <div className="corner-decor top-left"></div>
+      <div className="corner-decor top-right"></div>
+      <div className="corner-decor bottom-left"></div>
+      <div className="corner-decor bottom-right"></div>
+      
       <div className="flex justify-between items-start mb-3">
-        <h3 className="font-bold text-sm text-retro-dark">{painPoint.title}</h3>
+        <h3 className="font-bold text-sm">{painPoint.title}</h3>
         <Badge variant={getSentimentVariant(painPoint.sentiment)}>
           {painPoint.platform.toUpperCase()}
         </Badge>
@@ -49,27 +57,37 @@ export const PainPointCard: React.FC<PainPointCardProps> = ({
       </div>
       
       <div className="mb-4">
-        <div className="flex justify-between items-center mb-2">
-          <span className="text-xs font-bold text-orange-400">URGENCY:</span>
-          <span className="text-xs font-bold text-white">{painPoint.urgency_score}/10</span>
+        <div className="text-xs font-bold mb-2">
+          URGENCY: <span className="text-pink-600">{painPoint.urgency_score}/10</span>
         </div>
-        <ProgressBar value={painPoint.urgency_score} max={10} />
+        <ProgressBar 
+          value={painPoint.urgency_score * 10} 
+          max={100}
+        />
       </div>
       
-      <blockquote className="text-xs italic mb-4 leading-relaxed p-3 bg-orange-50 border-l-4 border-orange-500 text-retro-dark">
+      <blockquote className="text-xs italic mb-4 leading-relaxed p-3 bg-orange-50 border-l-4 border-orange-500">
         "{painPoint.quote}"
       </blockquote>
       
       <div className="flex justify-between text-xs font-bold mb-4">
-        <span className="text-green-600">👍 {painPoint.votes}</span>
-        <span className="text-blue-600">💬 {painPoint.comments}</span>
+        <span>👍 <span className="text-green-600">{painPoint.votes}</span></span>
+        <span>💬 <span className="text-blue-600">{painPoint.comments}</span></span>
       </div>
       
       <div className="flex gap-2">
-        <Button variant="secondary" onClick={onSave}>SAVE</Button>
-        <Button variant="primary" onClick={onGenerate}>GEN</Button>
-        <Button variant="secondary">VIEW</Button>
+        <button className="btn-secondary text-xs btn-press" onClick={onSave}>
+          SAVE
+        </button>
+        <button className="btn-primary text-xs btn-press" onClick={onGenerate}>
+          GEN
+        </button>
       </div>
-    </Card>
+    </div>
   );
 };
+```
+
+---
+*File: /Users/krystiangaleczka/Documents/NicheFinderMVP/niche-finder/src/components/realtime/PainPointCard.tsx*
+*Exported: PainPointCard.md*

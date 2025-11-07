@@ -1,3 +1,6 @@
+# RealtimeTab
+
+```typescript
 import React, { useState, useMemo, useCallback } from 'react';
 import { PainPoint } from '../../lib/types';
 import { mockPainPoints } from '../../lib/data';
@@ -42,19 +45,11 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
 
   return (
     <div className={className}>
-      {/* Retro Header */}
-      <div className="retro-header mb-6">
-        <h1 className="pixel-text text-lg text-white">
-          REAL-TIME PAIN POINTS ({filteredData.length})
-        </h1>
-      </div>
-
       {/* Filters Bar */}
-      <div className="filters-bar mb-6 flex flex-wrap gap-4">
+      <div className="flex flex-wrap gap-3 mb-6">
         <select
           value={platformFilter}
           onChange={(e) => setPlatformFilter(e.target.value)}
-          className="form-control"
         >
           <option value="">ALL PLATFORMS</option>
           {platforms.map((platform: any) => (
@@ -66,7 +61,6 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
         
         <select
           value={categoryFilter}
-          className="form-control"
           onChange={(e) => setCategoryFilter(e.target.value)}
         >
           <option value="">ALL CATEGORIES</option>
@@ -80,7 +74,6 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
         <select
           value={sentimentFilter}
           onChange={(e) => setSentimentFilter(e.target.value)}
-          className="form-control"
         >
           <option value="">ALL SENTIMENTS</option>
           {sentiments.map((sentiment: any) => (
@@ -93,7 +86,6 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
         <select
           value={urgencyFilter}
           onChange={(e) => setUrgencyFilter(e.target.value)}
-          className="form-control"
         >
           <option value="0">ALL URGENCY</option>
           <option value="7">HIGH (7+)</option>
@@ -102,8 +94,15 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
         </select>
       </div>
 
+      {/* Header */}
+      <div className="retro-header mb-6">
+        <h1 className="pixel-text py-2 text-white">
+          REAL-TIME DATA ({filteredData.length})
+        </h1>
+      </div>
+
       {/* Grid */}
-      <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))'}}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {filteredData.map((painPoint: any) => (
           <PainPointCard
             key={painPoint.id}
@@ -116,3 +115,8 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
     </div>
   );
 };
+```
+
+---
+*File: /Users/krystiangaleczka/Documents/NicheFinderMVP/niche-finder/src/components/realtime/RealtimeTab.tsx*
+*Exported: RealtimeTab.md*

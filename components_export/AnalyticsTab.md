@@ -1,3 +1,6 @@
+# AnalyticsTab
+
+```typescript
 import React, { useEffect, useRef } from 'react';
 import {
   Chart as ChartJS,
@@ -100,8 +103,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
       },
       tooltip: {
         backgroundColor: '#1a1a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
+        titleColor: '#f4f1de',
+        bodyColor: '#f4f1de',
         borderColor: '#ff6b35',
         borderWidth: 2,
         titleFont: {
@@ -125,26 +128,26 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
         title: {
           display: true,
           text: 'URGENCY SCORE',
-          color: '#ffffff',
+          color: '#1a1a2e',
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
-          color: '#ffffff',
+          color: '#1a1a2e',
         },
       },
       y: {
         title: {
           display: true,
           text: 'VOTES',
-          color: '#ffffff',
+          color: '#1a1a2e',
         },
         grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
+          color: 'rgba(0, 0, 0, 0.1)',
         },
         ticks: {
-          color: '#ffffff',
+          color: '#1a1a2e',
         },
       },
     },
@@ -154,8 +157,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
       },
       tooltip: {
         backgroundColor: '#1a1a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
+        titleColor: '#f4f1de',
+        bodyColor: '#f4f1de',
         borderColor: '#ff6b35',
         borderWidth: 2,
       },
@@ -170,7 +173,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
   return (
     <div className={className}>
       <div className="retro-header mb-6">
-        <h1 className="text-xl font-bold pixel-text py-2 text-white">
+        <h1 className="text-xl font-bold pixel-text py-2 text-text-primary">
           ANALYTICS DASHBOARD
         </h1>
       </div>
@@ -181,15 +184,15 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
           <div className="text-2xl md:text-4xl font-bold mb-2 value">5,432</div>
           <div className="text-xs font-bold">TOTAL IDEAS</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
+        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-green to-retro-teal">
           <div className="text-2xl md:text-4xl font-bold mb-2 value">1,234</div>
           <div className="text-xs font-bold">VALIDATED</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
+        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-purple to-retro-pink">
           <div className="text-2xl md:text-4xl font-bold mb-2 value">89</div>
           <div className="text-xs font-bold">LAUNCHED</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
+        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center bg-gradient-to-br from-retro-orange to-retro-yellow">
           <div className="text-2xl md:text-4xl font-bold mb-2 value">$1.2B</div>
           <div className="text-xs font-bold">TAM FOUND</div>
         </Card>
@@ -204,10 +207,10 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
           </h3>
           <div className="space-y-2">
             {hottestPainPoints.map((point: any, index: number) => (
-              <div key={point.id} className="flex items-center justify-between p-2 bg-black/30 border-2 border-retro-brown">
+              <div key={point.id} className="flex items-center justify-between p-2 bg-bg-tertiary border-2 border-retro-brown">
                 <div className="flex items-center gap-2">
                   <span className="text-xs font-bold text-retro-orange">#{index + 1}</span>
-                  <span className="text-xs font-medium truncate max-w-[100px] md:max-w-[150px] text-gray-300">{point.title}</span>
+                  <span className="text-xs font-medium truncate max-w-[100px] md:max-w-[150px]">{point.title}</span>
                 </div>
                 <span className="text-xs font-bold text-retro-teal">{point.votes}</span>
               </div>
@@ -248,3 +251,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
     </div>
   );
 };
+```
+
+---
+*File: /Users/krystiangaleczka/Documents/NicheFinderMVP/niche-finder/src/components/analytics/AnalyticsTab.tsx*
+*Exported: AnalyticsTab.md*
