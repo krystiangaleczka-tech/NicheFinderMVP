@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import { NicheIdea } from "../../lib/types";
 import { Card } from "../ui/Card";
-import { Badge } from "../ui/Badge";
 import { Button } from "../ui/Button";
 import { Star, Copy, Download, ChevronDown, ChevronUp } from "lucide-react";
 
@@ -32,7 +31,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   };
 
   const getMonetizationColor = (index: number) => {
-    const colors = ["text-retro-pink", "text-retro-teal", "text-retro-purple"];
+    const colors = ["var(--retro-pink)", "var(--retro-teal)", "var(--retro-purple)"];
     return colors[index % colors.length];
   };
 
@@ -63,11 +62,11 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   return (
     <Card
       showCorners={true}
-      className="niche-card p-5 relative overflow-hidden self-start"
+      className={`niche-card p-5 relative ${isExpanded ? 'is-expanded' : ''} overflow-hidden self-start`}
     >
       {/* Header - zawsze widoczny */}
       <div className="mb-4">
-        <h3 className="font-bold text-xl mb-2 text-retro-orange">
+        <h3 className="font-bold text-xl mb-2" style={{color: 'var(--retro-orange)'}}>
           {idea.title}
         </h3>
         <p className="text-xs font-bold text-purple-600">
@@ -79,15 +78,15 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
       <div className="flex flex-wrap gap-3 text-xs mb-4">
         <span className="flex items-center gap-2">
           <span className="font-bold">DIFF:</span>
-          <Badge variant={getDifficultyBadgeClass(idea.difficulty) as any}>
+          <span className={`badge ${getDifficultyBadgeClass(idea.difficulty)}`}>
             {idea.difficulty}/10
-          </Badge>
+          </span>
         </span>
         <span className="flex items-center gap-2">
           <span className="font-bold">TAM:</span>
-          <Badge variant="positive">
+          <span className="badge badge-positive">
             ${(idea.market.tam / 1000000).toFixed(1)}M
-          </Badge>
+          </span>
         </span>
         <span className="font-bold text-gray-600">
           ⏱ {formatTimeAgo(idea.generated_at)}
@@ -95,49 +94,34 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
       </div>
 
       {/* Expandable Content z animacją */}
-      <div
-        style={{
-          maxHeight: isExpanded ? "2000px" : "0",
-          overflow: "hidden",
-          transition: "max-height 0.35s ease-in-out, padding 0.35s ease-in-out",
-          paddingTop: isExpanded ? "16px" : "0px",
-          paddingBottom: isExpanded ? "24px" : "0px",
-        }}
-      >
+      <div className="expandable-content">
         {/* Market Potential Section */}
-        <div className="mb-6">
-          <h4 className="font-bold mb-3 text-sm bg-orange-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <div className="section">
+          <h4 className="font-bold mb-3 text-sm bg-orange-500 text-white px-3 py-1 inline-block border-2 border-black" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.3)'}}>
             MARKET POTENTIAL
           </h4>
-          <p className="text-xs mb-2 font-bold text-gray-700">
-            <span className="text-retro-teal">TAM:</span> $
-            {(idea.market.tam / 1000000).toFixed(0)}M |
-            <span className="text-retro-purple ml-2">SAM:</span> $
-            {(idea.market.sam / 1000000).toFixed(0)}M |
-            <span className="text-retro-pink ml-2">SOM:</span> $
-            {(idea.market.som / 1000000).toFixed(0)}M
+          <p className="text-xs mb-2 font-bold">
+            <span style={{color: 'var(--retro-teal)'}}>TAM:</span> ${(idea.market.tam / 1000000).toFixed(0)}M | 
+            <span style={{color: 'var(--retro-purple)', marginLeft: '4px'}}>SAM:</span> ${(idea.market.sam / 1000000).toFixed(0)}M | 
+            <span style={{color: 'var(--retro-pink)', marginLeft: '4px'}}>SOM:</span> ${(idea.market.som / 1000000).toFixed(0)}M
           </p>
-          <p className="text-xs font-bold text-gray-700">
-            <span className="text-retro-green">⚡</span> Runway:{" "}
-            <span className="text-retro-green font-bold">
-              {idea.market.runway_months} months
-            </span>
+          <p className="text-xs font-bold">
+            <span style={{color: 'var(--retro-green)'}}>⚡</span> Runway: <span style={{color: 'var(--retro-green)'}}>{idea.market.runway_months} months</span>
           </p>
         </div>
 
         {/* Monetization Section */}
-        <div className="mb-6">
-          <h4 className="font-bold mb-3 text-sm bg-teal-500 text-white px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <div className="section">
+          <h4 className="font-bold mb-3 text-sm bg-teal-500 text-white px-3 py-1 inline-block border-2 border-black" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.3)'}}>
             MONETIZATION
           </h4>
-          <ul className="text-xs space-y-2 text-gray-700">
+          <ul className="text-xs space-y-2">
             {idea.monetization && idea.monetization.length > 0 ? (
               idea.monetization.map((mon: any, index: number) => (
                 <li key={index} className="flex items-start gap-2">
-                  <span className={getMonetizationColor(index)}>▸</span>
+                  <span style={{color: getMonetizationColor(index).replace('text-', 'var(--').replace('retro-', 'retro-') + ')'}}>▸</span>
                   <span>
-                    <strong>{mon.type}:</strong> $
-                    {(mon.revenue_potential / 1000000).toFixed(1)}M potential
+                    <strong>{mon.type}:</strong> ${(mon.revenue_potential / 1000000).toFixed(1)}M potential
                   </span>
                 </li>
               ))
@@ -148,41 +132,27 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
         </div>
 
         {/* Timeline Section */}
-        <div className="mb-6">
-          <h4 className="font-bold mb-3 text-sm bg-yellow-400 text-black px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        <div className="section">
+          <h4 className="font-bold mb-3 text-sm bg-yellow-400 text-black px-3 py-1 inline-block border-2 border-black" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.3)'}}>
             TIMELINE
           </h4>
-          <p className="text-xs font-bold text-gray-700">
-            <span className="text-retro-teal">●</span> MVP:{" "}
-            {idea.time_to_mvp_weeks} weeks |
-            <span className="text-retro-pink ml-2">●</span> $1K MRR:{" "}
-            {idea.time_to_1k_mrr_months} months
+          <p className="text-xs font-bold">
+            <span style={{color: 'var(--retro-teal)'}}>●</span> MVP: {idea.time_to_mvp_weeks} weeks | 
+            <span style={{color: 'var(--retro-pink)', marginLeft: '4px'}}>●</span> $1K MRR: {idea.time_to_1k_mrr_months} months
           </p>
         </div>
 
         {/* Action Buttons */}
-        <div className="flex justify-end gap-3 pt-4 border-t border-gray-300">
-          <Button
-            variant="secondary"
-            className="p-2 bg-yellow-300 border-2 border-black hover:bg-yellow-400 shadow-[3px_3px_0_rgba(0,0,0,0.2)]"
-            title="Save"
-          >
-            <Star className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="secondary"
-            className="p-2 bg-teal-300 border-2 border-black hover:bg-teal-400 shadow-[3px_3px_0_rgba(0,0,0,0.2)]"
-            title="Copy"
-          >
-            <Copy className="w-4 h-4" />
-          </Button>
-          <Button
-            variant="secondary"
-            className="p-2 bg-purple-300 border-2 border-black hover:bg-purple-400 shadow-[3px_3px_0_rgba(0,0,0,0.2)]"
-            title="Download"
-          >
-            <Download className="w-4 h-4" />
-          </Button>
+        <div className="section flex justify-end gap-3 pt-4">
+          <button className="p-2 bg-yellow-300 border-2 border-black hover:bg-yellow-400 btn-press" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.2)'}} title="Save">
+            <Star className="w-5 h-5" />
+          </button>
+          <button className="p-2 bg-teal-300 border-2 border-black hover:bg-teal-400 btn-press" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.2)'}} title="Copy">
+            <Copy className="w-5 h-5" />
+          </button>
+          <button className="p-2 bg-purple-300 border-2 border-black hover:bg-purple-400 btn-press" style={{boxShadow: '3px 3px 0 rgba(0,0,0,0.2)'}} title="Download">
+            <Download className="w-5 h-5" />
+          </button>
         </div>
       </div>
 
