@@ -13,15 +13,15 @@ export const AggregatedTab: React.FC<AggregatedTabProps> = ({ className = '' }) 
     return (
       <div className={className}>
         <div className="retro-header mb-6">
-          <h1 className="text-xl font-bold pixel-text py-2 text-text-primary">
+          <h1 className="text-xl font-bold pixel-text py-2 text-white">
             AGGREGATED PAIN POINTS (0)
           </h1>
         </div>
         
         <Card className="text-center py-12">
           <Inbox className="w-16 h-16 mx-auto text-gray-400 mb-4" />
-          <p className="text-gray-500 text-lg font-bold">No aggregated data available</p>
-          <p className="text-gray-400 text-sm mt-2">Start collecting real-time data first</p>
+          <p className="text-lg font-bold">NO AGGREGATED DATA AVAILABLE</p>
+          <p className="text-sm mt-2">START COLLECTING REAL-TIME DATA FIRST</p>
         </Card>
       </div>
     );
@@ -30,7 +30,7 @@ export const AggregatedTab: React.FC<AggregatedTabProps> = ({ className = '' }) 
   return (
     <div className={className}>
       <div className="retro-header mb-4 md:mb-6">
-        <h1 className="text-lg md:text-xl font-bold pixel-text py-2 text-text-primary">
+        <h1 className="text-lg md:text-xl font-bold pixel-text py-2 text-white">
           AGGREGATED PAIN POINTS ({mockAggregatedPainPoints.length})
         </h1>
       </div>

@@ -34,6 +34,7 @@ export default function RootLayout({
     <html lang="pl">
       <body
         className={`${pressStart2P.variable} ${vt323.variable} ${ibmPlexMono.variable} antialiased`}
+        suppressHydrationWarning
       >
         {children}
       </body>

@@ -1,10 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AggregatedPainPoint } from '../../lib/types';
 import { Card } from '../ui/Card';
 import { Badge } from '../ui/Badge';
 import { ProgressBar } from '../ui/ProgressBar';
-import { Button } from '../ui/Button';
-import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface AggregatedCardProps {
   aggregatedPoint: AggregatedPainPoint;
@@ -13,110 +11,144 @@ interface AggregatedCardProps {
 export const AggregatedCard: React.FC<AggregatedCardProps> = ({ aggregatedPoint }: any) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
-  const getPlatformColor = (platformName: string) => {
-    const colors: Record<string, string> = {
-      'Reddit': 'text-retro-pink',
-      'YouTube': 'text-retro-teal', 
-      'GitHub': 'text-retro-purple',
-      'Twitter': 'text-retro-yellow'
+  useEffect(() => {
+    console.log('AggregatedCard mounted with ', aggregatedPoint);
+    console.log('specific_issues:', aggregatedPoint?.specific_issues);
+  }, []);
+
+  useEffect(() => {
+    console.log('isExpanded changed to:', isExpanded);
+  }, [isExpanded]);
+
+  const getPlatformIconStyle = (platformName: string): React.CSSProperties => {
+    const colorMap: Record<string, string> = {
+      'Reddit': 'var(--retro-pink)',
+      'YouTube': 'var(--retro-teal)',
+      'Twitter': 'var(--retro-yellow)',
+      'GitHub': 'var(--retro-purple)'
     };
-    return colors[platformName] || 'text-retro-blue';
+    return { color: colorMap[platformName] || 'var(--retro-blue)' };
   };
 
-  const getIssueColor = (index: number) => {
+  const getIssueIconStyle = (index: number): React.CSSProperties => {
     const colors = [
-      'text-retro-pink',
-      'text-retro-teal', 
-      'text-retro-purple',
-      'text-retro-yellow',
-      'text-retro-green'
+      'var(--retro-pink)',
+      'var(--retro-teal)',
+      'var(--retro-purple)',
+      'var(--retro-yellow)',
+      'var(--retro-green)'
     ];
-    return colors[index % colors.length];
+    return { color: colors[index % colors.length] };
   };
+
+  const getStatCardStyle = (type: 'sever' | 'freq' | 'growth' | 'opport'): React.CSSProperties => {
+    const styles: Record<string, React.CSSProperties> = {
+      'sever': {
+        background: 'linear-gradient(135deg, var(--retro-pink) 0%, var(--retro-purple) 100%)'
+      },
+      'freq': {
+        background: 'linear-gradient(135deg, var(--retro-blue) 0%, var(--retro-teal) 100%)'
+      },
+      'growth': {
+        background: 'linear-gradient(135deg, var(--retro-green) 0%, var(--retro-teal) 100%)'
+      },
+      'opport': {
+        background: 'linear-gradient(135deg, var(--retro-yellow) 0%, var(--retro-orange) 100%)'
+      }
+    };
+    return styles[type];
+  };
+
+  const getButtonStyles = (): React.CSSProperties => ({
+    background: 'var(--retro-yellow)',
+    color: 'var(--retro-dark)',
+    borderWidth: '2px',
+    borderStyle: 'solid',
+    borderColor: 'var(--retro-dark)',
+    boxShadow: '4px 4px 0 var(--retro-dark)',
+    cursor: 'pointer',
+    transition: 'all 0.2s ease'
+  });
 
   const toggleExpand = () => {
+    console.log('Toggle clicked, current state:', isExpanded);
     setIsExpanded(!isExpanded);
   };
 
   return (
-    <Card className="p-5 mb-4">
+    <Card 
+      showCorners={true} 
+      className={`p-5 mb-4 ${isExpanded ? 'is-expanded' : ''}`}
+    >
       <div className="flex justify-between items-start mb-3">
-        <h3 className="font-bold text-lg text-text-primary">{aggregatedPoint.title}</h3>
+        <h3 className="font-bold text-lg">{aggregatedPoint.title}</h3>
         <Badge variant="positive">
           {aggregatedPoint.mentions} ↑↑ {aggregatedPoint.trend_percent}%
         </Badge>
       </div>
       
-      <p className="text-xs font-bold mb-4 text-text-secondary">
-        {aggregatedPoint.platforms.map((platform: any, index: number) => (
-          <span key={platform.name} className={getPlatformColor(platform.name)}>
-            █ {platform.name} {platform.count}
+      <p className="text-xs font-bold mb-4">
+        {aggregatedPoint.platforms?.map((platform: any, index: number) => (
+          <React.Fragment key={platform.name}>
+            <span style={getPlatformIconStyle(platform.name)}>█</span> {platform.name} {platform.count}
             {index < aggregatedPoint.platforms.length - 1 && ' '}
-          </span>
+          </React.Fragment>
         ))}
       </p>
 
       <div className="mb-4">
         <ProgressBar 
-          value={aggregatedPoint.severity * 10} 
-          max={100}
-          color="orange"
+          value={aggregatedPoint.severity} 
+          max={10}
         />
       </div>
 
       <div className="grid grid-cols-4 gap-3 mb-4">
-        <Card className="stats-card py-3 bg-gradient-to-br from-retro-pink to-retro-purple">
+        <div className="stats-card py-3" style={getStatCardStyle('sever')}>
           <div className="text-2xl font-bold value">{aggregatedPoint.severity}/10</div>
           <div className="text-xs mt-1 font-bold">Sever</div>
-        </Card>
-        <Card className="stats-card py-3 bg-gradient-to-br from-retro-blue to-retro-teal">
+        </div>
+        <div className="stats-card py-3" style={getStatCardStyle('freq')}>
           <div className="text-2xl font-bold value">{aggregatedPoint.frequency}/10</div>
           <div className="text-xs mt-1 font-bold">Freq</div>
-        </Card>
-        <Card className="stats-card py-3 bg-gradient-to-br from-retro-green to-retro-teal">
+        </div>
+        <div className="stats-card py-3" style={getStatCardStyle('growth')}>
           <div className="text-2xl font-bold value">+{aggregatedPoint.growth_rate}%</div>
           <div className="text-xs mt-1 font-bold">Growth</div>
-        </Card>
-        <Card className="stats-card py-3 bg-gradient-to-br from-retro-yellow to-retro-orange">
+        </div>
+        <div className="stats-card py-3" style={getStatCardStyle('opport')}>
           <div className="text-2xl font-bold value">{aggregatedPoint.opportunity_score}/10</div>
           <div className="text-xs mt-1 font-bold">Opport</div>
-        </Card>
+        </div>
       </div>
 
-      {isExpanded && (
-        <div className="expandable-content mb-4">
-          <div className="section">
-            <h4 className="font-bold mb-3 text-sm text-orange-600">SPECIFIC ISSUES:</h4>
-            <ul className="text-xs space-y-2 text-text-secondary">
+      <div className="expandable-content">
+        <div className="section">
+          <h4 className="font-bold mb-3 text-sm text-orange-600">SPECIFIC ISSUES:</h4>
+          {aggregatedPoint.specific_issues && aggregatedPoint.specific_issues.length > 0 ? (
+            <ul className="text-xs space-y-2">
               {aggregatedPoint.specific_issues.map((issue: any, index: number) => (
                 <li key={index} className="flex items-start gap-2">
-                  <span className={getIssueColor(index)}>■</span>
+                  <span style={getIssueIconStyle(index)}>■</span>
                   <span>{issue}</span>
                 </li>
               ))}
             </ul>
-          </div>
+          ) : (
+            <p className="text-xs" style={{ color: 'var(--text-secondary)' }}>
+              No specific issues available
+            </p>
+          )}
         </div>
-      )}
+      </div>
       
-      <Button 
-        variant="secondary" 
-        size="sm" 
+      <button 
         onClick={toggleExpand}
-        className="text-xs font-bold bg-yellow-300 border-2 border-black hover:bg-yellow-400"
+        className="text-xs font-bold mt-3 px-4 py-2 btn-press"
+        style={getButtonStyles()}
       >
-        {isExpanded ? (
-          <>
-            <ChevronUp className="w-3 h-3 mr-1" />
-            HIDE DETAILS
-          </>
-        ) : (
-          <>
-            <ChevronDown className="w-3 h-3 mr-1" />
-            VIEW DETAILS
-          </>
-        )}
-      </Button>
+        {isExpanded ? '▲ HIDE DETAILS' : '▼ VIEW DETAILS'}
+      </button>
     </Card>
   );
 };
