@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { mockNicheIdeas } from '../../lib/data';
 import { IdeaCard } from './IdeaCard';
 import { Button } from '../ui/Button';
@@ -10,8 +10,22 @@ interface IdeasTabProps {
 }
 
 export const IdeasTab: React.FC<IdeasTabProps> = ({ className = '' }) => {
-  // Pomiń state 'allExpanded' na razie - każda karta ma swój
-  // Jeśli będzie trzeba expand-all, dodasz context lub hooka later
+  const [globalExpanded, setGlobalExpanded] = useState<boolean | null>(null);
+  const [localControlCard, setLocalControlCard] = useState<string | null>(null);
+
+  const handleExpandAll = () => {
+    setGlobalExpanded(true);
+    setLocalControlCard(null);
+  };
+
+  const handleCollapseAll = () => {
+    setGlobalExpanded(false);
+    setLocalControlCard(null);
+  };
+
+  const handleCardLocalControl = (cardId: string) => {
+    setLocalControlCard(cardId);
+  };
   if (mockNicheIdeas.length === 0) {
     return (
       <div className={className}>
@@ -36,11 +50,21 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ className = '' }) => {
           </h1>
         </div>
         <div className="flex items-center gap-2 sm:gap-3 mt-3 sm:mt-0">
-          <Button variant="secondary" size="sm" className="flex items-center gap-2 text-xs">
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="flex items-center gap-2 text-xs"
+            onClick={handleExpandAll}
+          >
             <Maximize2 className="w-4 h-4" />
             <span className="hidden sm:inline">EXPAND</span>
           </Button>
-          <Button variant="secondary" size="sm" className="flex items-center gap-2 text-xs">
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="flex items-center gap-2 text-xs"
+            onClick={handleCollapseAll}
+          >
             <Minimize2 className="w-4 h-4" />
             <span className="hidden sm:inline">COLLAPSE</span>
           </Button>
@@ -50,7 +74,13 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ className = '' }) => {
       {/* Grid z items-start - key fix */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5 items-start">
         {mockNicheIdeas.map((idea) => (
-          <IdeaCard key={idea.id} idea={idea} />
+          <IdeaCard 
+            key={idea.id} 
+            idea={idea} 
+            globalExpanded={globalExpanded}
+            isLocalControl={localControlCard === idea.id}
+            onLocalControl={handleCardLocalControl}
+          />
         ))}
       </div>
     </div>

@@ -9,10 +9,21 @@ import { Star, Copy, Download, ChevronDown, ChevronUp } from "lucide-react";
 
 interface IdeaCardProps {
   idea: NicheIdea;
+  globalExpanded?: boolean | null;
+  isLocalControl?: boolean;
+  onLocalControl?: (cardId: string) => void;
 }
 
-export const IdeaCard: React.FC<IdeaCardProps> = ({ idea }: any) => {
-  const [isExpanded, setIsExpanded] = useState(false);
+export const IdeaCard: React.FC<IdeaCardProps> = ({ 
+  idea, 
+  globalExpanded = null,
+  isLocalControl = false,
+  onLocalControl 
+}: any) => {
+  const [localExpanded, setLocalExpanded] = useState(false);
+  
+  // Use global state if not in local control mode, otherwise use local state
+  const isExpanded = isLocalControl ? localExpanded : (globalExpanded !== null ? globalExpanded : localExpanded);
 
   const getDifficultyBadgeClass = (difficulty: number) => {
     if (difficulty <= 3) return "badge-positive";
@@ -38,7 +49,15 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({ idea }: any) => {
   };
 
   const toggleExpand = () => {
-    setIsExpanded(!isExpanded);
+    if (!isLocalControl && globalExpanded !== null && onLocalControl) {
+      // If global control is active, switch to local control for this card
+      onLocalControl(idea.id);
+      // Set local state to opposite of current global state
+      setLocalExpanded(!globalExpanded);
+    } else {
+      // Use local state (either already in local control or no global control)
+      setLocalExpanded(!localExpanded);
+    }
   };
 
   return (
