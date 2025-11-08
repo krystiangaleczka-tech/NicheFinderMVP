@@ -1,250 +1,548 @@
-import React, { useEffect, useRef } from 'react';
-import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement,
-} from 'chart.js';
-import { Bar, Pie, Scatter } from 'react-chartjs-2';
-import { Card } from '../ui/Card';
-import { mockAnalyticsData, mockPainPoints } from '../../lib/data';
+'use client';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  Title,
-  Tooltip,
-  Legend,
-  ArcElement,
-  PointElement,
-  LineElement
-);
+import React, { useMemo, useRef, useState } from 'react';
+import { Card } from '../ui/Card';
 
 interface AnalyticsTabProps {
   className?: string;
 }
 
+type Cat = { name: string; value: number };
+type Plat = { name: string; value: number };
+type Hot = { id: number; title: string; changePct: number };
+
+const colors = ['#3a86ff', '#ff6b35', '#ffbe0b', '#9d4edd', '#00bfb3', '#ff006e', '#06ffa5'];
+
 export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) => {
-  const categoryChartRef = useRef<any>(null);
-  const platformChartRef = useRef<any>(null);
-  const opportunityChartRef = useRef<any>(null);
+  // Tooltip state
+  type Bubble = { x: number; y: number; r: number; title: string; mentions: number };
+  const bubbles: Bubble[] = [
+    { x: 7.0, y: 6.0, r: 46, title: 'Slow Performance & Rate Limiting', mentions: 178 },
+    { x: 7.9, y: 6.8, r: 60, title: 'Checkout/Payment Integration', mentions: 245 },
+    { x: 8.2, y: 6.6, r: 56, title: 'API Quotas & Limits', mentions: 204 },
+    { x: 8.0, y: 4.8, r: 44, title: 'Docs Gaps', mentions: 132 },
+  ];
 
-  // Prepare data for charts
-  const categoryData = {
-    labels: mockAnalyticsData.category_distribution.map((c: any) => c.name),
-    datasets: [
-      {
-        data: mockAnalyticsData.category_distribution.map((c: any) => c.percent),
-        backgroundColor: [
-          '#ff6b35',
-          '#00bfb3',
-          '#9d4edd',
-          '#ff006e',
-          '#ffbe0b',
-          '#3a86ff',
-          '#06ffa5',
-        ],
-        borderColor: '#1a1a2e',
-        borderWidth: 3,
-      },
-    ],
+  const W = 1000, H = 300;
+  const m = { top: 16, right: 20, bottom: 50, left: 70 };
+  const iw = W - m.left - m.right;
+  const ih = H - m.top - m.bottom;
+  const x = (v: number) => m.left + (Math.max(0, Math.min(10, v)) / 10) * iw;
+  const y = (v: number) => m.top + (1 - Math.max(0, Math.min(10, v)) / 10) * ih;
+
+  type Hover = { cx: number; cy: number; rr: number; label: string; color: string };
+  const [hover, setHover] = useState<Hover | null>(null);
+  const measureRef = useRef<SVGTextElement | null>(null);
+
+  type DonutHover = { name: string; value: number; color: string; midAngle: number };
+  const [donutHover, setDonutHover] = useState<DonutHover | null>(null);
+  const [lockedTooltip, setLockedTooltip] = useState<DonutHover | null>(null);
+
+  const wrapLabel = (text: string, maxLineWidth: number, baseFont = 14) => {
+    const words = text.split(' ');
+    const lines: string[] = [];
+    let line = '';
+    words.forEach((w) => {
+      const candidate = line ? `${line} ${w}` : w;
+      if (measureRef.current) {
+        measureRef.current.textContent = candidate;
+        const width = measureRef.current.getBBox().width;
+        if (width > maxLineWidth && line) {
+          lines.push(line);
+          line = w;
+        } else {
+          line = candidate;
+        }
+      } else {
+        if (candidate.length * (baseFont * 0.6) > maxLineWidth && line) {
+          lines.push(line);
+          line = w;
+        } else {
+          line = candidate;
+        }
+      }
+    });
+    if (line) lines.push(line);
+    return lines;
   };
 
-  const platformData = {
-    labels: mockAnalyticsData.platform_distribution.map((p: any) => p.name),
-    datasets: [
-      {
-        data: mockAnalyticsData.platform_distribution.map((p: any) => p.count),
-        backgroundColor: [
-          '#ff6b35',
-          '#00bfb3',
-          '#9d4edd',
-          '#ffbe0b',
-        ],
-        borderColor: '#1a1a2e',
-        borderWidth: 3,
-      },
-    ],
-  };
+  const data = useMemo(
+    () => ({
+      hottest: [
+        { id: 1, title: 'Payment Integration', changePct: 45 },
+        { id: 2, title: 'Performance Issues', changePct: 28 },
+        { id: 3, title: 'Documentation', changePct: 0 },
+      ] as Hot[],
+      categories: [
+        { name: 'UX/UI', value: 32 },
+        { name: 'Payment', value: 28 },
+        { name: 'Support', value: 18 },
+        { name: 'Performance', value: 15 },
+        { name: 'Other', value: 7 },
+      ] as Cat[],
+      platforms: [
+        { name: 'Reddit', value: 4500 },
+        { name: 'YouTube', value: 3200 },
+        { name: 'Twitter', value: 1800 },
+        { name: 'GitHub', value: 890 },
+        { name: 'Others', value: 450 },
+      ] as Plat[],
+    }),
+    []
+  );
 
-  const opportunityData = {
-    datasets: [
-      {
-        label: 'Pain Points',
-        data: mockPainPoints.map((point: any) => ({
-          x: point.urgency_score,
-          y: point.votes,
-        })),
-        backgroundColor: '#ff6b35',
-        borderColor: '#1a1a2e',
-        borderWidth: 2,
-        pointRadius: 8,
-        pointHoverRadius: 10,
-      },
-    ],
-  };
+  const donutSize = 160;
+  const ringOuter = donutSize / 2 - 6;
+  const ringInner = ringOuter - 40;
+  const catTotal = data.categories.reduce((s, c) => s + c.value, 0);
+  const platMax = Math.max(...data.platforms.map((p) => p.value));
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: '#1a1a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        borderColor: '#ff6b35',
-        borderWidth: 2,
-        titleFont: {
-          family: 'IBM Plex Mono',
-          size: 12,
-          weight: 'bold' as const,
-        },
-        bodyFont: {
-          family: 'IBM Plex Mono',
-          size: 11,
-        },
-      },
-    },
+  const polar = (cx: number, cy: number, r: number, aDeg: number) => {
+    const a = (Math.PI / 180) * (aDeg - 90);
+    return { x: cx + r * Math.cos(a), y: cy + r * Math.sin(a) };
   };
-
-  const opportunityOptions: any = {
-    responsive: true,
-    maintainAspectRatio: false,
-    scales: {
-      x: {
-        title: {
-          display: true,
-          text: 'URGENCY SCORE',
-          color: '#ffffff',
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-        ticks: {
-          color: '#ffffff',
-        },
-      },
-      y: {
-        title: {
-          display: true,
-          text: 'VOTES',
-          color: '#ffffff',
-        },
-        grid: {
-          color: 'rgba(255, 255, 255, 0.1)',
-        },
-        ticks: {
-          color: '#ffffff',
-        },
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        backgroundColor: '#1a1a2e',
-        titleColor: '#ffffff',
-        bodyColor: '#ffffff',
-        borderColor: '#ff6b35',
-        borderWidth: 2,
-      },
-    },
-  };
-
-  // Get hottest pain points
-  const hottestPainPoints = [...mockPainPoints]
-    .sort((a: any, b: any) => b.votes - a.votes)
-    .slice(0, 5);
 
   return (
     <div className={className}>
       <div className="retro-header mb-6">
-        <h1 className="text-xl font-bold pixel-text py-2 text-white">
-          ANALYTICS DASHBOARD
-        </h1>
+        <h1 className="text-xl font-bold pixel-text py-2 text-white">ANALYTICS DASHBOARD</h1>
       </div>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 mb-4 md:mb-6">
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
-          <div className="text-2xl md:text-4xl font-bold mb-2 value">5,432</div>
+      {/* KPI */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <Card showCorners className="stats-card p-5 text-center relative !bg-gradient-to-br from-[#ff006e] to-[#ff6b35]">
+          <div className="text-4xl font-bold mb-2 value">5,432</div>
           <div className="text-xs font-bold">TOTAL IDEAS</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
-          <div className="text-2xl md:text-4xl font-bold mb-2 value">1,234</div>
-          <div className="text-xs font-bold">VALIDATED</div>
+        <Card showCorners className="stats-card p-5 text-center relative !bg-gradient-to-br from-[#06ffa5] to-[#00bfb3]">
+          <div className="text-4xl font-bold mb-2 value">1</div>
+          <div className="text-xs font-bold">VALID</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
-          <div className="text-2xl md:text-4xl font-bold mb-2 value">89</div>
-          <div className="text-xs font-bold">LAUNCHED</div>
+        <Card showCorners className="stats-card p-5 text-center relative !bg-gradient-to-br from-[#9d4edd] to-[#ff006e]">
+          <div className="text-4xl font-bold mb-2 value">0</div>
+          <div className="text-xs font-bold">LAUNCH</div>
         </Card>
-        <Card showCorners={true} className="stats-card p-3 md:p-5 text-center">
-          <div className="text-2xl md:text-4xl font-bold mb-2 value">$1.2B</div>
-          <div className="text-xs font-bold">TAM FOUND</div>
+        <Card showCorners className="stats-card p-5 text-center relative !bg-gradient-to-br from-[#ff6b35] to-[#ffbe0b]">
+          <div className="text-4xl font-bold mb-2 value">$236M</div>
+          <div className="text-xs font-bold">TAM</div>
         </Card>
       </div>
 
-      {/* Charts */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-5">
-        {/* Hottest Pain Points */}
-        <Card showCorners={true} className="p-4 md:p-5">
-          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-orange-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+      {/* TOP ROW */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* HOTTEST */}
+        <div className="card p-5 relative">
+          <div className="corner-decor top-left" />
+          <div className="corner-decor top-right" />
+          <h3 className="font-bold mb-4 text-sm bg-orange-500 text-white px-3 py-1 inline-block border-2 border-black" style={{ boxShadow: '3px 3px 0 rgba(0,0,0,0.3)' }}>
             HOTTEST PAIN POINTS
           </h3>
           <div className="space-y-2">
-            {hottestPainPoints.map((point: any, index: number) => (
-              <div key={point.id} className="flex items-center justify-between p-2 bg-black/30 border-2 border-retro-brown">
-                <div className="flex items-center gap-2">
-                  <span className="text-xs font-bold text-retro-orange">#{index + 1}</span>
-                  <span className="text-xs font-medium truncate max-w-[100px] md:max-w-[150px] text-gray-300">{point.title}</span>
-                </div>
-                <span className="text-xs font-bold text-retro-teal">{point.votes}</span>
+            {data.hottest.map((p, i) => (
+              <div key={p.id} className="flex items-center justify-between px-3 py-2 rounded border border-black/10 bg-white">
+                <span className="text-sm">{p.title}</span>
+                <span className="text-xs" style={{ color: i < 2 ? '#ff6b35' : '#00bfb3' }}>
+                  {i < 2 ? `↑↑ +${p.changePct}%` : '→ Stable'}
+                </span>
               </div>
             ))}
           </div>
-        </Card>
+        </div>
 
-        {/* Category Split */}
-        <Card showCorners={true} className="p-4 md:p-5">
-          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-teal-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+        {/* CATEGORY SPLIT */}
+        <div className="card p-5 relative" style={{ zIndex: 1 }}>
+          <div className="corner-decor top-left" />
+          <div className="corner-decor top-right" />
+          <h3 className="font-bold mb-4 text-sm bg-teal-500 text-white px-3 py-1 inline-block border-2 border-black" style={{ boxShadow: '3px 3px 0 rgba(0,0,0,0.3)' }}>
             CATEGORY SPLIT
           </h3>
-          <div className="h-40 md:h-48">
-            <Pie ref={categoryChartRef} data={categoryData} options={chartOptions} />
-          </div>
-        </Card>
+          <div className="flex flex-col items-center relative" style={{ height: 200 }} onMouseLeave={() => {
+            setLockedTooltip(null);
+            setDonutHover(null);
+          }}>
+            <svg width={donutSize} height={donutSize} viewBox={`0 0 ${donutSize} ${donutSize}`}>
+              {(() => {
+                let start = 0;
+                const cx = donutSize / 2,
+                  cy = donutSize / 2;
+                return data.categories.map((c, i) => {
+                  const angle = (c.value / catTotal) * 360;
+                  const end = start + angle;
+                  const p1 = polar(cx, cy, ringOuter, start);
+                  const p2 = polar(cx, cy, ringOuter, end);
+                  const p3 = polar(cx, cy, ringInner, end);
+                  const p4 = polar(cx, cy, ringInner, start);
+                  const large = angle > 180 ? 1 : 0;
+                  const midAngle = start + angle / 2;
 
-        {/* Platform Split */}
-        <Card showCorners={true} className="p-4 md:p-5">
-          <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-pink-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+                  const d = [
+                    `M ${p1.x} ${p1.y}`,
+                    `A ${ringOuter} ${ringOuter} 0 ${large} 1 ${p2.x} ${p2.y}`,
+                    `L ${p3.x} ${p3.y}`,
+                    `A ${ringInner} ${ringInner} 0 ${large} 0 ${p4.x} ${p4.y}`,
+                    'Z',
+                  ].join(' ');
+
+                  start = end;
+
+                  const isHovered = donutHover && donutHover.name === c.name;
+                  const scale = isHovered ? 1.15 : 1;
+                  
+                  return (
+                    <g key={c.name}>
+                      <path
+                        d={d}
+                        fill={colors[i % colors.length]}
+                        stroke="#1a1a2e"
+                        strokeWidth={isHovered ? 1 : 2}
+                        onMouseEnter={() => {
+                          setDonutHover({ name: c.name, value: c.value, color: colors[i % colors.length], midAngle });
+                          setLockedTooltip({ name: c.name, value: c.value, color: colors[i % colors.length], midAngle });
+                        }}
+                        style={{ 
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease-in',
+                          transformOrigin: `${cx}px ${cy}px`,
+                          transform: `scale(${scale})`
+                        }}
+                      />
+                    </g>
+                  );
+                });
+              })()}
+              <circle cx={donutSize / 2} cy={donutSize / 2} r={ringInner - 1} fill="white" stroke="#1a1a2e" strokeWidth={2} style={{ pointerEvents: 'none' }} />
+
+
+            </svg>
+
+            {/* tooltip poza SVG */}
+            {lockedTooltip && (() => {
+              const label = `${lockedTooltip.name} ${lockedTooltip.value}%`;
+              const padX = 10, padY = 6;
+              const fontSize = 13;
+              const boxW = label.length * (fontSize * 0.6) + 24 + padX * 2;
+              const boxH = 28;
+              
+              // pozycja tooltipa - środek diva kontenera + pozycja wycinka
+              const containerWidth = donutSize; // rzeczywista szerokość kontenera
+              const containerHeight = donutSize; // rzeczywista wysokość kontenera
+              const centerX = containerWidth / 2; // środek diva
+              const centerY = containerHeight / 2;
+              
+              // oblicz pozycję wycinka względem środka diva
+              const angleRad = (lockedTooltip.midAngle - 90) * (Math.PI / 180);
+              const radius = (ringOuter + ringInner) / 2; // środek pierścienia
+              const segmentCenterX = centerX + radius * Math.cos(angleRad);
+              const segmentCenterY = centerY + radius * Math.sin(angleRad);
+              
+              // tooltip pozycjonowany względem wycinka
+              const tx = segmentCenterX + 50; // 50px w prawo od środka wycinka
+              const ty = segmentCenterY - boxH / 2; // wyśrodkowany pionowo na wycinku
+
+              return (
+                <div 
+                  className="absolute pointer-events-none"
+                  style={{
+                    left: `${tx}px`,
+                    top: `${ty}px`,
+                    width: `${boxW}px`,
+                    height: `${boxH}px`,
+                    zIndex: 9999
+                  }}
+                >
+                  {/* główny dymek z tłem */}
+                  <div 
+                    className="absolute"
+                    style={{ 
+                      backgroundColor: '#808080',
+                      border: '4px solid #1a1a2e',
+                      boxShadow: '8px 8px 0 rgba(0,0,0,0.1)',
+                      width: `${boxW}px`,
+                      height: `${boxH}px`
+                    }}
+                  />
+                  {/* cienie jak w kartach */}
+                  <div 
+                    className="absolute"
+                    style={{
+                      left: '8px',
+                      top: '8px',
+                      width: `${boxW}px`,
+                      height: `${boxH}px`,
+                      backgroundColor: 'rgba(0,0,0,0.1)'
+                    }}
+                  />
+                  {/* mały kolorowy kwadracik */}
+                  <div 
+                    className="absolute rounded-sm"
+                    style={{
+                      left: `${padX}px`,
+                      top: `${padY + 2}px`,
+                      width: '10px',
+                      height: '10px',
+                      backgroundColor: lockedTooltip.color
+                    }}
+                  />
+                  {/* tekst */}
+                  <div 
+                    className="absolute flex items-center"
+                    style={{
+                      left: `${padX + 16}px`,
+                      top: `${boxH / 2}px`,
+                      transform: 'translateY(-50%)',
+                      color: '#ffffff',
+                      fontSize: `${fontSize}px`,
+                      fontFamily: 'IBM Plex Mono, monospace'
+                    }}
+                  >
+                    {label}
+                  </div>
+                </div>
+              );
+            })()}
+
+            {/* legenda */}
+            <div className="mt-2 grid grid-cols-3 gap-2 text-xs justify-items-center">
+              {data.categories.map((c, i) => (
+                <div key={c.name} className="flex items-center gap-2">
+                  <span className="inline-block w-3 h-3 border border-black" style={{ background: colors[i % colors.length] }} />
+                  <span>{c.name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* PLATFORM SPLIT */}
+        <div className="card p-5 relative" style={{ zIndex: 0 }}>
+          <div className="corner-decor top-left" />
+          <div className="corner-decor top-right" />
+          <h3 className="font-bold mb-4 text-sm bg-pink-500 text-white px-3 py-1 inline-block border-2 border-black" style={{ boxShadow: '3px 3px 0 rgba(0,0,0,0.3)' }}>
             PLATFORM SPLIT
           </h3>
-          <div className="h-40 md:h-48">
-            <Pie ref={platformChartRef} data={platformData} options={chartOptions} />
+          
+          <div className="w-full h-48">
+            <svg viewBox="0 0 400 270" className="w-full h-full">
+              {/* Grid lines */}
+              {[0, 1000, 2000, 3000, 4000, 5000].map((value) => {
+                const x = 80 + (value / 5000) * 270;
+                return (
+                  <g key={value}>
+                    <line x1={x} y1={20} x2={x} y2={250} stroke="rgba(0,0,0,0.10)" />
+                    <text x={x} y={265} fontSize="10" textAnchor="middle" fill="#1a1a2e" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                      {value}
+                    </text>
+                  </g>
+                );
+              })}
+              
+              {/* Axes */}
+              <line x1={80} y1={250} x2={350} y2={250} stroke="#1a1a2e" strokeWidth="1.5" />
+              <line x1={80} y1={20} x2={80} y2={250} stroke="#1a1a2e" strokeWidth="1.5" />
+              
+              {/* Calculate dynamic dimensions */}
+              {(() => {
+                const barHeight = 20;
+                const barSpacing = 140 / data.platforms.length;
+                const topMargin = 20;
+                const bottomMargin = 20;
+                const totalHeight = (data.platforms.length * barSpacing) + topMargin + bottomMargin;
+                const startY = topMargin;
+                
+                return [...data.platforms].sort((a, b) => b.value - a.value).map((p, i) => {
+                  const y = startY + (i * barSpacing) + (barSpacing - barHeight) / 2;
+                  const barWidth = (p.value / 5000) * 270;
+                
+                return (
+                  <g key={p.name}>
+                    <rect 
+                      x={80} 
+                      y={y} 
+                      width={barWidth} 
+                      height={barHeight} 
+                      fill={colors[i % colors.length]}
+                      stroke="#1a1a2e"
+                      strokeWidth="2"
+                      rx="2"
+                    />
+                    <text 
+                      x={80 + barWidth + 10} 
+                      y={y + barHeight / 2 + 4} 
+                      fontSize="11" 
+                      fill="#1a1a2e" 
+                      style={{ fontFamily: 'IBM Plex Mono, monospace', fontWeight: 600 }}
+                    >
+                      {p.value}
+                    </text>
+                    <text 
+                      x={70} 
+                      y={y + barHeight / 2 + 4} 
+                      fontSize="10" 
+                      textAnchor="end" 
+                      fill="#1a1a2e" 
+                      style={{ fontFamily: 'IBM Plex Mono, monospace' }}
+                    >
+                      {p.name}
+                    </text>
+                   </g>
+                 );
+                });
+              })()}
+            </svg>
           </div>
-        </Card>
+        </div>
       </div>
-      
-      {/* Opportunity Matrix */}
-      <Card showCorners={true} className="p-4 md:p-5 mt-4 md:mt-5">
-        <h3 className="font-bold mb-3 md:mb-4 text-xs md:text-sm bg-purple-500 text-white px-2 md:px-3 py-1 inline-block border-2 border-black shadow-[3px_3px_0_rgba(0,0,0,0.3)]">
+
+      {/* OPPORTUNITY MATRIX */}
+      <div className="card p-5 relative mt-5">
+        <div className="corner-decor top-left" />
+        <div className="corner-decor top-right" />
+        <h3 className="font-bold mb-4 text-sm bg-purple-500 text-white px-3 py-1 inline-block border-2 border-black" style={{ boxShadow: '3px 3px 0 rgba(0,0,0,0.3)' }}>
           OPPORTUNITY MATRIX
         </h3>
-        <div className="h-80 md:h-96">
-          <Scatter ref={opportunityChartRef} data={opportunityData} options={opportunityOptions} />
+
+        <div className="w-full h-80">
+          {(() => {
+            const ticks = Array.from({ length: 11 }, (_, i) => i);
+
+            return (
+              <svg viewBox={`0 0 ${W} ${H}`} className="w-full h-full">
+                <rect x={m.left} y={m.top} width={iw} height={ih} fill="#ffffff" />
+                {ticks.map((t) => (
+                  <line key={`vx-${t}`} x1={x(t)} y1={m.top} x2={x(t)} y2={m.top + ih} stroke="rgba(0,0,0,0.10)" />
+                ))}
+                {ticks.map((t) => (
+                  <line key={`hy-${t}`} x1={m.left} y1={y(t)} x2={m.left + iw} y2={y(t)} stroke="rgba(0,0,0,0.10)" />
+                ))}
+
+                <line x1={m.left} y1={m.top + ih} x2={m.left + iw} y2={m.top + ih} stroke="#1a1a2e" strokeWidth="1.5" />
+                <line x1={m.left} y1={m.top} x2={m.left} y2={m.top + ih} stroke="#1a1a2e" strokeWidth="1.5" />
+
+                {ticks.map((t) => (
+                  <g key={`xt-${t}`}>
+                    <line x1={x(t)} y1={m.top + ih} x2={x(t)} y2={m.top + ih + 4} stroke="#1a1a2e" />
+                    <text x={x(t)} y={m.top + ih + 18} fontSize="11" textAnchor="middle" fill="#1a1a2e" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                      {t}
+                    </text>
+                  </g>
+                ))}
+                {ticks.map((t) => (
+                  <g key={`yt-${t}`}>
+                    <line x1={m.left - 4} y1={y(t)} x2={m.left} y2={y(t)} stroke="#1a1a2e" />
+                    <text x={m.left - 10} y={y(t) + 4} fontSize="11" textAnchor="end" fill="#1a1a2e" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                      {t}
+                    </text>
+                  </g>
+                ))}
+
+                <text x={m.left + iw / 2} y={H - 10} fontSize="14" textAnchor="middle" fill="#1a1a2e" style={{ fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700 }}>
+                  Severity
+                </text>
+                <text transform={`translate(18 ${m.top + ih / 2}) rotate(-90)`} fontSize="14" textAnchor="middle" fill="#1a1a2e" style={{ fontFamily: 'IBM Plex Mono, monospace', fontWeight: 700 }}>
+                  Opportunity Score
+                </text>
+
+                {bubbles.map((b, i) => {
+                  const cx = x(b.x);
+                  const cy = y(b.y);
+                  const rr = b.r / 2;
+                  const label = `${b.title}: Severity ${b.x}, Opportunity ${b.y}, ${b.mentions} mentions`;
+                  const isHovered = hover && hover.cx === cx && hover.cy === cy;
+                  const scale = isHovered ? 1.15 : 1;
+                  return (
+                    <g key={i} onMouseEnter={() => setHover({ cx, cy, rr, label, color: '#ff6b35' })} onMouseLeave={() => setHover(null)} tabIndex={0}>
+                      <circle 
+                        cx={cx} 
+                        cy={cy} 
+                        r={rr * scale} 
+                        fill="#ff6b35" 
+                        opacity={0.8} 
+                        stroke="#1a1a2e" 
+                        strokeWidth={isHovered ? 1 : 2}
+                        style={{ 
+                          transition: 'all 0.15s ease-in',
+                          transformOrigin: `${cx}px ${cy}px`
+                        }} 
+                      />
+                    </g>
+                  );
+                })}
+
+                <text ref={measureRef} x={-9999} y={-9999} fontSize="14" style={{ visibility: 'hidden', fontFamily: 'IBM Plex Mono, monospace' }}>
+                  _
+                </text>
+
+                <text ref={measureRef} x={-9999} y={-9999} fontSize="14" style={{ visibility: 'hidden', fontFamily: 'IBM Plex Mono, monospace' }}>
+                  _
+                </text>
+
+                {hover && (() => {
+                  const gap = 12;
+                  const padX = 10,
+                    padY = 6;
+                  const lineH = 18;
+
+                  const bubbleLeft = hover.cx - hover.rr;
+                  const availableLeft = bubbleLeft - gap - (m.left + 6);
+                  const hardMax = 460;
+
+                  const lineMax = Math.max(120, Math.min(availableLeft - padX * 2 - 16, hardMax));
+                  const lines = wrapLabel(hover.label, lineMax);
+
+                  let longest = 0;
+                  if (measureRef.current) {
+                    lines.forEach((ln) => {
+                      measureRef.current!.textContent = ln;
+                      longest = Math.max(longest, measureRef.current!.getBBox().width);
+                    });
+                  } else {
+                    longest = Math.min(lineMax, hover.label.length * 8);
+                  }
+
+                  const boxW = Math.min(longest + padX * 2 + 16 + 12, availableLeft);
+                  const boxH = padY * 2 + lines.length * lineH;
+                  const offsetX = iw * 0.04;
+                  const offsetY = ih * 0.12;
+
+                  const rightEdge = bubbleLeft - gap;
+                  let tx = rightEdge - boxW - offsetX;
+                  let ty = hover.cy - boxH - offsetY;
+                  ty = Math.max(m.top + 6, Math.min(m.top + ih - boxH - 6, ty));
+
+                  const angle = (225 * Math.PI) / 180;
+                  const sx = hover.cx + hover.rr * Math.cos(angle);
+                  const sy = hover.cy + hover.rr * Math.sin(angle);
+
+                  const ex = tx + boxW;
+                  const ey = ty + boxH;
+
+                  return (
+                    <g role="tooltip" style={{ pointerEvents: 'none' }}>
+                      <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={hover.color} strokeOpacity="0.7" strokeWidth={3} strokeDasharray="6 4" />
+                      {/* główny dymek z tłem */}
+                      <rect x={tx} y={ty} width={boxW} height={boxH} fill="#808080" />
+                      {/* grube obramowanie jak w kartach */}
+                      <rect x={tx} y={ty} width={boxW} height={boxH} fill="none" stroke="#1a1a2e" strokeWidth={4} />
+                      {/* cienie jak w kartach */}
+                      <rect x={tx + 8} y={ty + 8} width={boxW} height={boxH} fill="rgba(0,0,0,0.1)" />
+                      {/* mały kolorowy kwadracik */}
+                      <rect x={tx + padX} y={ty + padY + 2} width={10} height={10} rx={2} fill={hover.color} />
+                      {/* tekst */}
+                      <text x={tx + padX + 16} y={ty + padY + 14} fill="#ffffff" fontSize="14" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
+                        {lines.map((ln, i) => (
+                          <tspan key={i} x={tx + padX + 16} dy={i === 0 ? 0 : lineH}>
+                            {ln}
+                          </tspan>
+                        ))}
+                      </text>
+                    </g>
+                  );
+                })()}
+              </svg>
+            );
+          })()}
         </div>
-      </Card>
+      </div>
     </div>
   );
 };

@@ -12,7 +12,7 @@ export const Card: React.FC<CardProps> = ({
   showCorners = true 
 }) => {
   return (
-    <div className={`card relative ${className}`}>
+    <div className={`card relative ${className}`} style={{}}>
       {showCorners && (
         <>
           <div className="corner-decor top-left"></div>

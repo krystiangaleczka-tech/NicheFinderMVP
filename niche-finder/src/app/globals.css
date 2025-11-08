@@ -199,6 +199,22 @@ body::before {
         padding 0.33s ease-in;
 }
 
+/* Gradient cards for analytics */
+.card.gradient-green,
+.card[class*="gradient-green"] {
+    background: linear-gradient(135deg, #06ffa5 0%, #00bfb3 100%) !important;
+}
+
+.card.gradient-purple,
+.card[class*="gradient-purple"] {
+    background: linear-gradient(135deg, #9d4edd 0%, #ff006e 100%) !important;
+}
+
+.card.gradient-orange,
+.card[class*="gradient-orange"] {
+    background: linear-gradient(135deg, #ff6b35 0%, #ffbe0b 100%) !important;
+}
+
 .section {
     border-top: 3px dashed var(--border);
     padding-top: 16px;
