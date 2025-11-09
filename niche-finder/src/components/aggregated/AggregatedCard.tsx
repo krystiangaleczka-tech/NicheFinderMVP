@@ -8,13 +8,13 @@ interface AggregatedCardProps {
   aggregatedPoint: AggregatedPainPoint;
 }
 
-export const AggregatedCard: React.FC<AggregatedCardProps> = ({ aggregatedPoint }: any) => {
+export const AggregatedCard: React.FC<AggregatedCardProps> = ({ aggregatedPoint }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   useEffect(() => {
     console.log('AggregatedCard mounted with ', aggregatedPoint);
     console.log('specific_issues:', aggregatedPoint?.specific_issues);
-  }, []);
+  }, [aggregatedPoint]);
 
   useEffect(() => {
     console.log('isExpanded changed to:', isExpanded);
@@ -88,7 +88,7 @@ export const AggregatedCard: React.FC<AggregatedCardProps> = ({ aggregatedPoint 
       </div>
       
       <p className="text-xs font-bold mb-4">
-        {aggregatedPoint.platforms?.map((platform: any, index: number) => (
+        {aggregatedPoint.platforms?.map((platform, index: number) => (
           <React.Fragment key={platform.name}>
             <span style={getPlatformIconStyle(platform.name)}>█</span> {platform.name} {platform.count}
             {index < aggregatedPoint.platforms.length - 1 && ' '}
@@ -127,7 +127,7 @@ export const AggregatedCard: React.FC<AggregatedCardProps> = ({ aggregatedPoint 
           <h4 className="font-bold mb-3 text-sm text-orange-600">SPECIFIC ISSUES:</h4>
           {aggregatedPoint.specific_issues && aggregatedPoint.specific_issues.length > 0 ? (
             <ul className="text-xs space-y-2">
-              {aggregatedPoint.specific_issues.map((issue: any, index: number) => (
+              {aggregatedPoint.specific_issues.map((issue, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <span style={getIssueIconStyle(index)}>■</span>
                   <span>{issue}</span>

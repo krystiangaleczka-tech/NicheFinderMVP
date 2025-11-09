@@ -36,7 +36,7 @@ export const AggregatedTab: React.FC<AggregatedTabProps> = ({ className = '' }) 
       </div>
       
       <div className="space-y-3 md:space-y-4">
-        {mockAggregatedPainPoints.map((aggregatedPoint: any) => (
+        {mockAggregatedPainPoints.map((aggregatedPoint) => (
           <AggregatedCard
             key={aggregatedPoint.id}
             aggregatedPoint={aggregatedPoint}

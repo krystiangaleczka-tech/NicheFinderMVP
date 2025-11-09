@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Activity, BarChart3, Lightbulb, PieChart, RefreshCw, Download, Menu, X } from 'lucide-react';
 import { Button } from '../ui/Button';
-import { Card } from '../ui/Card';
+
 
 interface SidebarProps {
   activeTab: string;

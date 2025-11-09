@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { PainPoint } from '../../lib/types';
+
 import { mockPainPoints } from '../../lib/data';
 import { PainPointCard } from './PainPointCard';
+import { PainPoint } from '../../lib/types';
 
 interface RealtimeTabProps {
   className?: string;
@@ -28,15 +29,15 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
     });
   }, [platformFilter, categoryFilter, sentimentFilter, urgencyFilter]);
 
-  const platforms = Array.from(new Set(mockPainPoints.map((p: any) => p.platform)));
-  const categories = Array.from(new Set(mockPainPoints.map((p: any) => p.category)));
-  const sentiments = Array.from(new Set(mockPainPoints.map((p: any) => p.sentiment)));
+  const platforms = Array.from(new Set(mockPainPoints.map((p) => p.platform)));
+  const categories = Array.from(new Set(mockPainPoints.map((p) => p.category)));
+  const sentiments = Array.from(new Set(mockPainPoints.map((p) => p.sentiment)));
 
-  const handleSave = useCallback((painPoint: any) => {
+  const handleSave = useCallback((painPoint: PainPoint) => {
     console.log('Saving pain point:', painPoint);
   }, []);
 
-  const handleGenerate = useCallback((painPoint: any) => {
+  const handleGenerate = useCallback((painPoint: PainPoint) => {
     console.log('Generating idea from pain point:', painPoint);
   }, []);
 
@@ -57,7 +58,7 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
           className="form-control"
         >
           <option value="">ALL PLATFORMS</option>
-          {platforms.map((platform: any) => (
+          {platforms.map((platform) => (
             <option key={platform} value={platform}>
               {platform.toUpperCase()}
             </option>
@@ -70,7 +71,7 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
           onChange={(e) => setCategoryFilter(e.target.value)}
         >
           <option value="">ALL CATEGORIES</option>
-          {categories.map((category: any) => (
+          {categories.map((category) => (
             <option key={category} value={category}>
               {category.toUpperCase()}
             </option>
@@ -83,7 +84,7 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
           className="form-control"
         >
           <option value="">ALL SENTIMENTS</option>
-          {sentiments.map((sentiment: any) => (
+          {sentiments.map((sentiment) => (
             <option key={sentiment} value={sentiment}>
               {sentiment.toUpperCase()}
             </option>
@@ -104,7 +105,7 @@ export const RealtimeTab: React.FC<RealtimeTabProps> = ({ className = '' }) => {
 
       {/* Grid */}
       <div className="grid gap-4" style={{gridTemplateColumns: 'repeat(auto-fit, minmax(380px, 1fr))'}}>
-        {filteredData.map((painPoint: any) => (
+        {filteredData.map((painPoint) => (
           <PainPointCard
             key={painPoint.id}
             painPoint={painPoint}

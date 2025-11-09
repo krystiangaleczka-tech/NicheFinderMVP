@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Card } from '../ui/Card';
 
 interface AnalyticsTabProps {
@@ -32,39 +32,13 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
 
   type Hover = { cx: number; cy: number; rr: number; label: string; color: string };
   const [hover, setHover] = useState<Hover | null>(null);
-  const measureRef = useRef<SVGTextElement | null>(null);
+
 
   type DonutHover = { name: string; value: number; color: string; midAngle: number };
   const [donutHover, setDonutHover] = useState<DonutHover | null>(null);
   const [lockedTooltip, setLockedTooltip] = useState<DonutHover | null>(null);
 
-  const wrapLabel = (text: string, maxLineWidth: number, baseFont = 14) => {
-    const words = text.split(' ');
-    const lines: string[] = [];
-    let line = '';
-    words.forEach((w) => {
-      const candidate = line ? `${line} ${w}` : w;
-      if (measureRef.current) {
-        measureRef.current.textContent = candidate;
-        const width = measureRef.current.getBBox().width;
-        if (width > maxLineWidth && line) {
-          lines.push(line);
-          line = w;
-        } else {
-          line = candidate;
-        }
-      } else {
-        if (candidate.length * (baseFont * 0.6) > maxLineWidth && line) {
-          lines.push(line);
-          line = w;
-        } else {
-          line = candidate;
-        }
-      }
-    });
-    if (line) lines.push(line);
-    return lines;
-  };
+
 
   const data = useMemo(
     () => ({
@@ -95,7 +69,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
   const ringOuter = donutSize / 2 - 6;
   const ringInner = ringOuter - 40;
   const catTotal = data.categories.reduce((s, c) => s + c.value, 0);
-  const platMax = Math.max(...data.platforms.map((p) => p.value));
+
 
   const polar = (cx: number, cy: number, r: number, aDeg: number) => {
     const a = (Math.PI / 180) * (aDeg - 90);
@@ -162,18 +136,18 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
           }}>
             <svg width={donutSize} height={donutSize} viewBox={`0 0 ${donutSize} ${donutSize}`}>
               {(() => {
-                let start = 0;
                 const cx = donutSize / 2,
                   cy = donutSize / 2;
                 return data.categories.map((c, i) => {
+                  const startAngle = data.categories.slice(0, i).reduce((acc, cat) => acc + (cat.value / catTotal) * 360, 0);
                   const angle = (c.value / catTotal) * 360;
-                  const end = start + angle;
-                  const p1 = polar(cx, cy, ringOuter, start);
+                  const end = startAngle + angle;
+                  const p1 = polar(cx, cy, ringOuter, startAngle);
                   const p2 = polar(cx, cy, ringOuter, end);
                   const p3 = polar(cx, cy, ringInner, end);
-                  const p4 = polar(cx, cy, ringInner, start);
+                  const p4 = polar(cx, cy, ringInner, startAngle);
                   const large = angle > 180 ? 1 : 0;
-                  const midAngle = start + angle / 2;
+                  const midAngle = startAngle + angle / 2;
 
                   const d = [
                     `M ${p1.x} ${p1.y}`,
@@ -182,8 +156,6 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
                     `A ${ringInner} ${ringInner} 0 ${large} 0 ${p4.x} ${p4.y}`,
                     'Z',
                   ].join(' ');
-
-                  start = end;
 
                   const isHovered = donutHover && donutHover.name === c.name;
                   const scale = isHovered ? 1.15 : 1;
@@ -345,8 +317,8 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
                 const barHeight = 20;
                 const barSpacing = 140 / data.platforms.length;
                 const topMargin = 20;
-                const bottomMargin = 20;
-                const totalHeight = (data.platforms.length * barSpacing) + topMargin + bottomMargin;
+
+
                 const startY = topMargin;
                 
                 return [...data.platforms].sort((a, b) => b.value - a.value).map((p, i) => {
@@ -468,76 +440,7 @@ export const AnalyticsTab: React.FC<AnalyticsTabProps> = ({ className = '' }) =>
                   );
                 })}
 
-                <text ref={measureRef} x={-9999} y={-9999} fontSize="14" style={{ visibility: 'hidden', fontFamily: 'IBM Plex Mono, monospace' }}>
-                  _
-                </text>
 
-                <text ref={measureRef} x={-9999} y={-9999} fontSize="14" style={{ visibility: 'hidden', fontFamily: 'IBM Plex Mono, monospace' }}>
-                  _
-                </text>
-
-                {hover && (() => {
-                  const gap = 12;
-                  const padX = 10,
-                    padY = 6;
-                  const lineH = 18;
-
-                  const bubbleLeft = hover.cx - hover.rr;
-                  const availableLeft = bubbleLeft - gap - (m.left + 6);
-                  const hardMax = 460;
-
-                  const lineMax = Math.max(120, Math.min(availableLeft - padX * 2 - 16, hardMax));
-                  const lines = wrapLabel(hover.label, lineMax);
-
-                  let longest = 0;
-                  if (measureRef.current) {
-                    lines.forEach((ln) => {
-                      measureRef.current!.textContent = ln;
-                      longest = Math.max(longest, measureRef.current!.getBBox().width);
-                    });
-                  } else {
-                    longest = Math.min(lineMax, hover.label.length * 8);
-                  }
-
-                  const boxW = Math.min(longest + padX * 2 + 16 + 12, availableLeft);
-                  const boxH = padY * 2 + lines.length * lineH;
-                  const offsetX = iw * 0.04;
-                  const offsetY = ih * 0.12;
-
-                  const rightEdge = bubbleLeft - gap;
-                  let tx = rightEdge - boxW - offsetX;
-                  let ty = hover.cy - boxH - offsetY;
-                  ty = Math.max(m.top + 6, Math.min(m.top + ih - boxH - 6, ty));
-
-                  const angle = (225 * Math.PI) / 180;
-                  const sx = hover.cx + hover.rr * Math.cos(angle);
-                  const sy = hover.cy + hover.rr * Math.sin(angle);
-
-                  const ex = tx + boxW;
-                  const ey = ty + boxH;
-
-                  return (
-                    <g role="tooltip" style={{ pointerEvents: 'none' }}>
-                      <line x1={sx} y1={sy} x2={ex} y2={ey} stroke={hover.color} strokeOpacity="0.7" strokeWidth={3} strokeDasharray="6 4" />
-                      {/* główny dymek z tłem */}
-                      <rect x={tx} y={ty} width={boxW} height={boxH} fill="#808080" />
-                      {/* grube obramowanie jak w kartach */}
-                      <rect x={tx} y={ty} width={boxW} height={boxH} fill="none" stroke="#1a1a2e" strokeWidth={4} />
-                      {/* cienie jak w kartach */}
-                      <rect x={tx + 8} y={ty + 8} width={boxW} height={boxH} fill="rgba(0,0,0,0.1)" />
-                      {/* mały kolorowy kwadracik */}
-                      <rect x={tx + padX} y={ty + padY + 2} width={10} height={10} rx={2} fill={hover.color} />
-                      {/* tekst */}
-                      <text x={tx + padX + 16} y={ty + padY + 14} fill="#ffffff" fontSize="14" style={{ fontFamily: 'IBM Plex Mono, monospace' }}>
-                        {lines.map((ln, i) => (
-                          <tspan key={i} x={tx + padX + 16} dy={i === 0 ? 0 : lineH}>
-                            {ln}
-                          </tspan>
-                        ))}
-                      </text>
-                    </g>
-                  );
-                })()}
               </svg>
             );
           })()}

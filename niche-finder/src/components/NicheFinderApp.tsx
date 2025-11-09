@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { ScanlineEffect, Sidebar, Header } from './layout';
 import { RealtimeTab } from './realtime';
 import { AggregatedTab } from './aggregated';

@@ -18,7 +18,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   globalExpanded = null,
   isLocalControl = false,
   onLocalControl 
-}: any) => {
+}) => {
   const [localExpanded, setLocalExpanded] = useState(false);
   
   // Use global state if not in local control mode, otherwise use local state
@@ -50,7 +50,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
   const toggleExpand = () => {
     if (!isLocalControl && globalExpanded !== null && onLocalControl) {
       // If global control is active, switch to local control for this card
-      onLocalControl(idea.id);
+      onLocalControl(idea.id.toString());
       // Set local state to opposite of current global state
       setLocalExpanded(!globalExpanded);
     } else {
@@ -70,7 +70,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
           {idea.title}
         </h3>
         <p className="text-xs font-bold text-purple-600">
-          SOURCE: "{idea.source_pain_point}"
+          SOURCE: &quot;{idea.source_pain_point}&quot;
         </p>
       </div>
 
@@ -117,7 +117,7 @@ export const IdeaCard: React.FC<IdeaCardProps> = ({
           </h4>
           <ul className="text-xs space-y-2">
             {idea.monetization && idea.monetization.length > 0 ? (
-              idea.monetization.map((mon: any, index: number) => (
+              idea.monetization.map((mon, index: number) => (
                 <li key={index} className="flex items-start gap-2">
                   <span style={{color: getMonetizationColor(index).replace('text-', 'var(--').replace('retro-', 'retro-') + ')'}}>▸</span>
                   <span>

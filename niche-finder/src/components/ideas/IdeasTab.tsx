@@ -78,7 +78,7 @@ export const IdeasTab: React.FC<IdeasTabProps> = ({ className = '' }) => {
             key={idea.id} 
             idea={idea} 
             globalExpanded={globalExpanded}
-            isLocalControl={localControlCard === idea.id}
+            isLocalControl={localControlCard === idea.id.toString()}
             onLocalControl={handleCardLocalControl}
           />
         ))}

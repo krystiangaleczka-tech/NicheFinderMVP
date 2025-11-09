@@ -24,11 +24,7 @@ export const PainPointCard: React.FC<PainPointCardProps> = ({
     }
   };
 
-  const getUrgencyColor = (urgency: number) => {
-    if (urgency >= 8) return 'orange' as const;
-    if (urgency >= 5) return 'pink' as const;
-    return 'teal' as const;
-  };
+
 
   return (
     <Card className="p-5">
@@ -57,7 +53,7 @@ export const PainPointCard: React.FC<PainPointCardProps> = ({
       </div>
       
       <blockquote className="text-xs italic mb-4 leading-relaxed p-3 bg-orange-50 border-l-4 border-orange-500 text-retro-dark">
-        "{painPoint.quote}"
+        &quot;{painPoint.quote}&quot;
       </blockquote>
       
       <div className="flex justify-between text-xs font-bold mb-4">
